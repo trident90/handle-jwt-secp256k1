@@ -10,9 +10,9 @@
   "license": "ISC",
   "dependencies": {
     "crypto": "^1.0.1",
+    "eckey-utils": "^0.7.13",
     "ethereumjs-wallet": "^1.0.2",
     "fs": "^0.0.1-security",
-    "jose": "^4.11.2",
-    "key-encoder": "^2.0.3"
+    "jose": "^4.11.2"
   }
 }

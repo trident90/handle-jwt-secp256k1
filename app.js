@@ -1,10 +1,11 @@
-const { generateKeyPair } = require('crypto');
+const { generateKeyPair, createECDH } = require('crypto');
+const ecKeyUtils = require('eckey-utils');
 const jose = require('jose');
 const wallet = require('ethereumjs-wallet').default;
 const fs = require('fs');
-const KeyEncoder = require('key-encoder').default;
 
 const alg = 'ES256K'
+const curveName = 'secp256k1'
 
 const keystoreFile = '/Users/trident/Temp/keystore/account-1'
 const passwd = 'demo'
@@ -25,11 +26,32 @@ const _getKeyPair = async () => {
 async function main() {
   const myWallet = await wallet.fromV3(fs.readFileSync(keystoreFile).toString(), passwd, true);
   const ethPrivKey = myWallet.getPrivateKeyString();
+  const ethPubKey = myWallet.getPublicKeyString();
   console.log('PrivateKey: ', ethPrivKey.substring(2));
   console.log('Address: ', myWallet.getAddressString());
-  var keyEncoder = new KeyEncoder('secp256k1');
-  console.log('PrivateKey: ', keyEncoder.encodePrivate(ethPrivKey.substring(2), 'raw', 'pem'));
+  const ePrivKey = Buffer.from(ethPrivKey.substring(2), 'hex');
+  const ePubKey = Buffer.from(ethPubKey.substring(2), 'hex');
+  const pems = ecKeyUtils.generatePem({
+    curveName,
+    privateKey: ePrivKey,
+    publicKey: ePubKey,
+  });
+  console.log('pems: ', pems);
 
+  /*
+  const aaa = createECDH('secp256k1');
+  aaa.setPrivateKey(ePrivKey);
+  let keyPair = await crypto.subtle.importKey(
+    'raw',
+    ePrivKey,
+    { name: 'ECDSA' },
+    true,
+    ['sign', 'verify']
+  );
+  //console.log('PEM:', await aaa.
+  console.log('getPrivKey: ', aaa.getPrivateKey().toString('hex'));
+  console.log('getPubKey: ', aaa.getPublicKey().toString('hex'));
+  */
   /*
   const keyPair = await _getKeyPair();
   console.log('publicKey: ', keyPair.publicKey.toString());
@@ -37,9 +59,8 @@ async function main() {
   const key = `${keyPair.privateKey.toString()}`;
   //const privKey = await jose.importPKCS8(keyPair.privateKey.toString, alg);
   */
-  const key = `${keyEncoder.encodePrivate(ethPrivKey.substring(2), 'raw', 'pem')}`;
-  console.log('key: ', key);
-  const privKey = await jose.importPKCS8(key, alg);
+  //console.log('key: ', ecKeyUtils.parsePem(pems).privateKey);
+  //const privKey = await jose.importPKCS8(`${pems.privateKey}`, alg);
   const jwt = await new jose.SignJWT( {'urn:example:clami': true })
     .setProtectedHeader({ alg })
     .setIssuedAt()
