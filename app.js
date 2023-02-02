@@ -1,14 +1,20 @@
-const { generateKeyPair } = require("crypto");
-const jose = require("jose");
+const { generateKeyPair } = require('crypto');
+const jose = require('jose');
+const wallet = require('ethereumjs-wallet').default;
+const fs = require('fs');
+const KeyEncoder = require('key-encoder').default;
 
-const alg = "ES256K"
+const alg = 'ES256K'
+
+const keystoreFile = '/Users/trident/Temp/keystore/account-1'
+const passwd = 'demo'
 
 const _getKeyPair = async () => {
   return new Promise((resolve, reject) => {
-    generateKeyPair("ec", {
-      namedCurve: "secp256k1",
-      publicKeyEncoding: { type: "spki", format: "pem" },
-      privateKeyEncoding: { type: "pkcs8", format: "pem" }
+    generateKeyPair('ec', {
+      namedCurve: 'secp256k1',
+      publicKeyEncoding: { type: 'spki', format: 'pem' },
+      privateKeyEncoding: { type: 'pkcs8', format: 'pem' }
     }, (err, publicKey, privateKey) => {
       if (err) return reject(err);
       resolve({publicKey, privateKey});
@@ -17,11 +23,22 @@ const _getKeyPair = async () => {
 };
 
 async function main() {
+  const myWallet = await wallet.fromV3(fs.readFileSync(keystoreFile).toString(), passwd, true);
+  const ethPrivKey = myWallet.getPrivateKeyString();
+  console.log('PrivateKey: ', ethPrivKey.substring(2));
+  console.log('Address: ', myWallet.getAddressString());
+  var keyEncoder = new KeyEncoder('secp256k1');
+  console.log('PrivateKey: ', keyEncoder.encodePrivate(ethPrivKey.substring(2), 'raw', 'pem'));
+
+  /*
   const keyPair = await _getKeyPair();
-  console.log("publicKey: ", keyPair.publicKey.toString());
-  console.log("PrivateKey: ", keyPair.privateKey.toString());
+  console.log('publicKey: ', keyPair.publicKey.toString());
+  console.log('PrivateKey: ', keyPair.privateKey.toString());
   const key = `${keyPair.privateKey.toString()}`;
   //const privKey = await jose.importPKCS8(keyPair.privateKey.toString, alg);
+  */
+  const key = `${keyEncoder.encodePrivate(ethPrivKey.substring(2), 'raw', 'pem')}`;
+  console.log('key: ', key);
   const privKey = await jose.importPKCS8(key, alg);
   const jwt = await new jose.SignJWT( {'urn:example:clami': true })
     .setProtectedHeader({ alg })
@@ -42,26 +59,3 @@ async function main() {
 }
 
 main();
-//console.log("PrivateKey is : ", privateKey.toString());
-/*
-console.log(privKey.toString());
-        } else {
-            console.log("Error is: ", err);
-        }});
-
-/*
-const jwt = require("jsonwebtoken");
-
-
-const secret = secp256k1.generateKeys();
-
-const token = jwt.sign({ data: "jwt payload" }, secret, { algorithm: "ES256" });
-
-const decoded = jwt.verify(token, secret, { algorithms: ["ES256"] }, (err, decoded) => {
-  if (err) {
-    console.error("JWT verification failed", err);
-  } else {
-    console.log("JWT verification succeeded", decoded);
-  }
-});
-*/
