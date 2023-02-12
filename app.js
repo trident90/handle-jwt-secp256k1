@@ -10,8 +10,8 @@ var KeyEncoder = require('@tradle/key-encoder').default, keyEncoder = new KeyEnc
 const alg = 'ES256K'
 const curveName = 'secp256k1'
 
-const keystoreFile = '/Users/trident/Temp/keystore/account-1'
-//const keystoreFile = '/Users/trident/Temp/keystore/account-jwt'
+//const keystoreFile = '/Users/trident/Temp/keystore/account-1'
+const keystoreFile = '/Users/trident/Temp/keystore/account-jwt'
 const passwd = 'demo'
 
 const _getKeyPair = async () => {
@@ -36,12 +36,14 @@ async function main() {
     const ethPrivKey = myWallet.getPrivateKeyString();
     const ethPubKey = myWallet.getPublicKeyString();
     console.log('PrivateKey: ', ethPrivKey.substring(2));
+    console.log('PublicKey: ', ethPubKey.substring(2));
     console.log('Address: ', myWallet.getAddressString());
     const ePrivKey = Buffer.from(ethPrivKey.substring(2), 'hex');
     const ePubKey = Buffer.from(ethPubKey.substring(2), 'hex');
     //let key = await keyEncoder.encodePrivate(keyPair.privateKey.export({type: 'sec1', format: 'pem'}), 'pem', 'raw');
     privKeyPEM = await keyEncoder.encodePrivate(ethPrivKey.substring(2), 'raw', 'pem', 'pkcs8');
     pubKeyPEM = await keyEncoder.encodePublic(ethPubKey.substring(2), 'raw', 'pem');
+    console.log(privKeyPEM);
     console.log(pubKeyPEM);
   } else  {
     const keyPair = await _getKeyPair();
@@ -54,7 +56,7 @@ async function main() {
     const myWallet = await wallet.fromPrivateKey(ePrivKey);
     const keystore = await myWallet.toV3String('demo');
     console.log('keystore: ', keystore);
-//    fs.writeFileSync(keystoreFile, keystore);
+    fs.writeFileSync(keystoreFile, keystore);
     privKeyPEM = keyPair.privateKey.export({type: 'pkcs8', format: 'pem'});
     console.log(keyPair.privateKey.type)
     pubKeyPEM = keyPair.publicKey.toString();
@@ -70,10 +72,6 @@ async function main() {
   console.log('jwt: ', jwt);
 
   const pubKey = await jose.importSPKI(pubKeyPEM, alg);
-//  const { payload, protectedHeader } = await jose.jwtVerify(jwt, pubKey, {
-//    issuer: 'urn:example:issuer',
-//    audience: 'urn:example:audience',
-//  });
   const { payload, protectedHeader } = await jose.jwtVerify(jwt, pubKey);
   console.log(protectedHeader);
   console.log(payload);

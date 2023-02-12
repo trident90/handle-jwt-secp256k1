@@ -9,12 +9,13 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@tradle/key-encoder": "^2.1.1",
+    "@tradle/key-encoder": "file:../key-encoder-js",
     "crypto": "^1.0.1",
     "eckey-utils": "^0.7.13",
-    "ethereumjs-wallet": "^1.0.2",
+    "ethereumjs-wallet": "file:../ethereumjs-wallet",
     "fs": "^0.0.1-security",
     "jose": "^4.11.2",
-    "key-encoder": "^2.0.3"
+    "key-encoder": "^2.0.3",
+    "web3": "^1.8.2"
   }
 }
