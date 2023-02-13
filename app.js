@@ -71,6 +71,9 @@ async function main() {
     .sign(privKey);
   console.log('jwt: ', jwt);
 
+  const jwtFile = './jwt.out'
+  fs.writeFileSync(jwtFile, jwt)
+
   const pubKey = await jose.importSPKI(pubKeyPEM, alg);
   const { payload, protectedHeader } = await jose.jwtVerify(jwt, pubKey);
   console.log(protectedHeader);

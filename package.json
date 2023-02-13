@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "@tradle/key-encoder": "file:../key-encoder-js",
+    "base64url": "^3.0.1",
     "crypto": "^1.0.1",
     "eckey-utils": "^0.7.13",
     "ethereumjs-wallet": "file:../ethereumjs-wallet",
