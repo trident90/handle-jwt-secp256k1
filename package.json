@@ -10,9 +10,11 @@
   "license": "ISC",
   "dependencies": {
     "@tradle/key-encoder": "file:../key-encoder-js",
+    "@trident90/ethereumjs-wallet": "file:../ethereumjs-wallet",
     "base64url": "^3.0.1",
     "crypto": "^1.0.1",
     "eckey-utils": "^0.7.13",
+    "elliptic": "^6.5.4",
     "ethereumjs-wallet": "file:../ethereumjs-wallet",
     "fs": "^0.0.1-security",
     "jose": "^4.11.2",

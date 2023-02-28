@@ -1,7 +1,7 @@
 const { generateKeyPair, createECDH } = require('crypto');
 const ecKeyUtils = require('eckey-utils');
 const jose = require('jose');
-const wallet = require('ethereumjs-wallet').default;
+const wallet = require('@trident90/ethereumjs-wallet').default;
 const fs = require('fs');
 const Web3 = require('web3');
 var KeyEncoder = require('@tradle/key-encoder').default, keyEncoder = new KeyEncoder('secp256k1');
@@ -63,7 +63,7 @@ async function main() {
   }
   const privKey = await jose.importPKCS8(privKeyPEM, alg);
 
-  const jwt = await new jose.SignJWT( {'urn:example:clami': true })
+  const jwt = await new jose.SignJWT( {'urn:example:claim': true })
     .setProtectedHeader({ alg })
     .setIssuedAt()
     .setIssuer('urn:example:issuer')
